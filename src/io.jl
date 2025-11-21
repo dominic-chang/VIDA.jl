@@ -54,7 +54,12 @@ function load_im_h5(fname::String; polarization = false)
         lunit = read(header["units"]["L_unit"])
         dx = read(header["camera"]["dx"])
         nx = Int(read(header["camera"]["nx"]))
-        time = read(header["t"]) * tunit / 3600
+        if haskey(fid, "t")
+            time = read(header["t"]) * tunit / 3600
+        else
+            @warn "No time found in HDF5 header"
+            time = 0.0
+        end
 
         if haskey(fid, "pol")
             if polarization
