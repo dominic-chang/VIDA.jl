@@ -333,14 +333,14 @@ end
     if blur > 0.0
         image = VIDA.blur(image, blur) # INI: blur the image with Gaussian kernel of given fwhm
     end
-    rimage = VIDA.regrid(image, μas2rad(200.0), μas2rad(200.0), 64, 64)
+    rimage = regrid(image, imagepixels(μas2rad(200.0), μas2rad(200.0), 64, 64))
     cimage = VIDA.clipimage(0.0, rimage)
     div = VIDA.LeastSquares(cimage)
     t = @elapsed begin
         prob = VIDAProblem(div, template, lower, upper)
         xopt, _, _ = vida(prob, BBO_adaptive_de_rand_1_bin(); maxiters = 20_000)
         # xopt2, θ, divmin = vida(prob, CMAEvolutionStrategyOpt(); init_params=xopt, maxiters=1_000)
-        xopt2, θ, divmin = vida(prob, ECA(; options = Options(f_calls_limit = 1000, f_tol = 1.0e-5)); init_params = xopt, use_initial = true)
+        xopt2, θ, divmin = vida(prob, ECA(; options = Options(f_calls_limit = 1000, f_tol = 1.0e-5)); init_params = xopt)
     end
     println("This took $t seconds")
     println("The minimum divergence is $divmin")
